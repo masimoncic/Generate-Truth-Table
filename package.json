@@ -1,0 +1,23 @@
+{
+  "name": "Truth-Table-GeneratorV2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masimoncic/Truth-Table-GeneratorV2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/masimoncic/Truth-Table-GeneratorV2/issues"
+  },
+  "homepage": "https://github.com/masimoncic/Truth-Table-GeneratorV2#readme",
+  "dependencies": {
+    "mocha": "^8.3.2"
+  }
+}
