@@ -26,6 +26,7 @@ function getPropLength (buf) {
       propLength ++;
     }
   }
+  //no symbols are found
   return propLength -1;
 }
 

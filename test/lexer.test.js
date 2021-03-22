@@ -1,6 +1,7 @@
 const assert = require('assert');
 const { getPropLength } = require('../lexer/getPropLength');
 const { getToken } = require('../lexer/getToken');
+const { lexer } = require('../lexer/lexer');
 
 describe('getPropLength', function() {
   describe('symbols', function () {
@@ -122,4 +123,84 @@ describe('getToken', function() {
     })
   })
 
+})
+
+describe('lexer', function () {
+  it('abc&def', function () {
+    assert.deepStrictEqual(
+      lexer('abc&def'), [
+        {
+          name: 'PROPOSITION',
+          value: 'abc',
+          position: 0
+        },
+        {
+          name: 'CONJUNCTION',
+          value: '&',
+          position: 3
+        },
+        {
+          name: 'PROPOSITION',
+          value: 'def',
+          position: 4
+        }
+      ]
+    )
+  })
+  it('~(a|b-c==de>=>efg->h)', function() {
+    assert.deepStrictEqual(
+      lexer('~(a|b-c==de>=>efg->h)'), [
+        {
+          name: 'NEGATION',
+          value: '~',
+          position: 0
+        },
+        {
+          name: 'L_PARENTHESIS',
+          value: '(',
+          position: 1
+        },
+        {
+          name: 'PROPOSITION',
+          value: 'a',
+          position: 2
+        },
+        {
+          name: 'DISJUNCTION',
+          value: '|',
+          position: 3
+        },
+        {
+          name: 'PROPOSITION',
+          value: 'b-c',
+          position: 4
+        },
+        {
+          name: 'BICONDITIONAL',
+          value: '==',
+          position: 7
+        },
+        {
+          name: 'PROPOSITION',
+          value: 'de>=>efg',
+          position: 9
+        },
+        {
+          name: 'CONDITIONAL',
+          value: '->',
+          position: 17
+        },
+        {
+          name: 'PROPOSITION',
+          value: 'h',
+          position: 19
+        },
+        {
+          name: 'R_PARENTHESIS',
+          value: ')',
+          position: 20
+        }
+      ]
+    )
+  })
 })
