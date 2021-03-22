@@ -38,7 +38,7 @@ function getToken (startPosition, buf) {
     return({ token, endPosition })
   } else {
     endPosition = getEndPosition(startPosition, buf)
-    let prop = buf.slice(startPosition, endPosition);
+    let prop = buf.slice(startPosition, endPosition + 1);
     let token = {
       name: 'PROPOSITION',
       value: prop,

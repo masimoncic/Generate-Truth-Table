@@ -39,9 +39,31 @@ describe('getEndPosition', function() {
 
 
 describe('getToken', function() {
-  it('1', function () {
-    assert.strictEqual(
-      getToken(0, 'asdf'), {}
+
+  it('proposition', function () {
+    assert.deepStrictEqual(
+      getToken(0, 'asdfgh'), {
+        endPosition: 5, 
+        token: {
+          name: 'PROPOSITION',
+          value: 'asdfgh',
+          position: 0,
+        }
+      } 
     )
   })
+  it('proposition, non-zero position', function () {
+    assert.deepStrictEqual(
+      getToken(2, 'asdfgh'), {
+        endPosition: 5, 
+        token: {
+          name: 'PROPOSITION',
+          value: 'dfgh',
+          position: 2,
+        }
+      } 
+    )
+  })
+
+
 })
