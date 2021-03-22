@@ -1,4 +1,4 @@
-getEndPosition = require('./getEndPosition');
+getEndPosition = require('./getPropLength');
 
 function lexer(str) {
 
