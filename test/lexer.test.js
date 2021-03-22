@@ -19,15 +19,6 @@ describe('getEndPosition', function() {
     it('(0, "ab>cd|efg")', function () {
       assert.strictEqual(getEndPosition(0, 'ab>cd|efg'), 4)
     })
-    it('(0, "ab-cd~efg")', function () {
-      assert.strictEqual(getEndPosition(0, 'ab-cd~efg'), 4)
-    })
-    it('(0, "ab>cd()e&f")', function () {
-      assert.strictEqual(getEndPosition(0, 'ab>cd()e&f'), 4)
-    })
-    it('(0, "ab>cd&efg)efg)', function () {
-      assert.strictEqual(getEndPosition(0, 'ab>cd&efg)efg'), 4)
-    })
     it('(0, "abcdasa")', function () {
       assert.strictEqual(getEndPosition(0, 'abcdasa'), 6)
     })
@@ -39,11 +30,8 @@ describe('getEndPosition', function() {
     it('(0, "ab==cd")', function () {
       assert.strictEqual(getEndPosition(4, 'ab==cd'), 5)
     })
-    it('(0, "aaa|ab>cd&efg)efg")', function () {
-      assert.strictEqual(getEndPosition(3, 'aa|ab>cd&efg)efg'), 7)
-    })
-    it('(0, "a|ab>cd&efg)efg")', function () {
-      assert.strictEqual(getEndPosition(0, 'a|ab>cd&efg)efg'), 0)
+    it('(0, "aa|ab>cd&efg)efg")', function () {
+      assert.strictEqual(getEndPosition(3, 'aa|ab>cd&efg)efg'), 4)
     })
   })
 })

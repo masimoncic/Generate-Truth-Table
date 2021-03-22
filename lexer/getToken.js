@@ -48,6 +48,9 @@ function getToken (startPosition, buf) {
   }
 }
 
+
+
+
 module.exports = {
   getToken
 }
