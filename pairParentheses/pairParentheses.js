@@ -31,4 +31,6 @@ function pairParentheses (str) {
   return pairs;
 };
 
-console.log(pairParentheses('(((@@)@@)@@)'))
+module.exports = {
+  pairParentheses
+}
