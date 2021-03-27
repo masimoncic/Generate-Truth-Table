@@ -39,12 +39,18 @@ function binary(node, pairs) {
     if(tokens[i].name === 'R_PARENTHESIS') {
       let rightPosition = tokens[i].position;
       let leftPosition = 0;
+      let leftToken = 0;
       for(j = 0; j < pairs.length; j ++) {
         if(pairs[j][1] === rightPosition) {
           leftPosition = pairs[j][0];
+          for (k = 0; k < tokens.length; k++) {
+            if (tokens[k].position === leftPosition) {
+              leftToken = k;
+            }
+          }
         }
       }
-      i = leftPosition -1;
+      i = leftToken -1;
     }
     if (i > -1) {
       if (binaryNames.includes(tokens[i].name)) {
@@ -91,12 +97,12 @@ function grouping(node, pairs) {
     node.type = "PROPOSITION";
     return node;
   } else if (node.tokens[0].name === 'L_PARENTHESIS') {
-
-    /*
-        let endToken = 0;
+    let startPosition = node.tokens[0].position;
+    let endPosition = 0;
+    let endToken = 0;
     for (i = 0; i < pairs.length; i++) {
-      if (pairs[i][0] === node.tokens[0].position) {
-        let endPosition = pairs[i][1];
+      if (pairs[i][0] === startPosition) {
+        endPosition = pairs[i][1];
         for (j = 0; j < node.tokens.length; j ++) {
           if (node.tokens[j].position === endPosition) {
             endToken = j;
@@ -104,8 +110,7 @@ function grouping(node, pairs) {
         }
       }
     }
-    */
-    let right = new Node('GROUPING', node.tokens.slice(1, node.tokens.length -1));
+    let right = new Node('GROUPING', node.tokens.slice(1, endToken));
     node.right = right;
     node.type = 'GROUPING';
     node.operation = 'PARENTHESES';
@@ -139,4 +144,5 @@ function eval (root) {
 
 */
 
-console.log(parseTokens('(~a&~(b|c))'))
+let finish = parseTokens('~(~a&~(b|c))');
+console.log(finish);
