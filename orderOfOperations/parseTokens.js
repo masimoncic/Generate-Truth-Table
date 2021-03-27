@@ -1,116 +1,142 @@
 const { lexer } = require('../lexer/lexer');
 const { pairParentheses } = require('../pairParentheses/pairParentheses');
 
-
-//grammar:
-/* 
-B (U "s" U) *
-U ("~" U
-   | P)
-P prop | "(" 
-*/
-
-
+//test!
 class Node {
-  constructor(value, tokens, operation) {
-    this.value = value,
+  constructor(type, tokens) {
+    this.type = type,
+    //this.value = value,
     this.tokens = tokens,
-    this.operation = operation,
-    this.right = null,
-    this.left = null
+    this.operation = null,
+    this.left = null,
+    this.right = null
   }
 }
 
+function parseTokens (str) {
+  let tokenArray = lexer(str);
+  let head = new Node('BINARY', tokenArray);
+  let pairs = pairParentheses(str);
+  binary(head, pairs);
+  return head;
+}
+    
 
-function parse (str) {
-  const tokenArray = lexer(str);
-  const pairs = pairParentheses(str);
-
-  let binarySymbol = [
+function binary(node, pairs) {
+  //need to ignore parens
+  const binaryNames = [
     'CONJUNCTION',
     'DISJUNCTION',
     'CONDITIONAL',
     'BICONDITIONAL',
   ];
+  let tokens = node.tokens;
+  let i = tokens.length -1;
+  let found = false;
+  while(found === false && i > -1) {
 
-  let unarySymbol = 'NEGATION';
-
-  let parentheses = [
-    'L_PARENTHESIS',
-    'R_PARENTHESIS',
-  ]
-
-  //grouping
-
-  //head
-  head = {
-    type: 'BINARY',
-    value: str,
-    tokens: tokenArray,
-    leftChild: null,
-    middleChild: null,
-    rightChild: null
-  }
-
-}
-
-function binary(node) {
-  found = false;
-  for (i = 0; i < node.tokenArray.length; i++) {
-    if(binarySymbols.includes(node.tokenArray[i])) {
-      let middle = 
-    }
-  }
-}
-
-
-function grouping(node, pairs) {
-  found = false;
-  for (i = 0; i < node.tokenArray.length; i++) {
-    if (node.tokenArray[i].value === 'L_PARENTHESIS') {
-      let leftPosition = node.tokenArray[i].position;
-      let rightPoisition = 0;
-      for (i = 0; i < pairs.length; i++) {
-        if (pairs[i][0] = leftPosition) {
-          rightPoisition = pairs[i][1];
+    //skip over parentheses
+    if(tokens[i].name === 'R_PARENTHESIS') {
+      let rightPosition = tokens[i].position;
+      let leftPosition = 0;
+      for(j = 0; j < pairs.length; j ++) {
+        if(pairs[j][1] === rightPosition) {
+          leftPosition = pairs[j][0];
         }
       }
-      //make a node
-      right = {
-        type: 'PARENTHESES',
-        value: str.slice(leftPosition, rightPosition + 1),
-        leftChild: null,
-        middleChild: null,
-        rightChild: null,
-      }
-      left = {
-        type: 'GROUPING',
-        value: str.slice(leftPosition + 1, rightPosition),
-        leftChild: null,
-        middleChild: null,
-        rightChild: null,
-      }
-        node.leftChild = left;
-        node.rightChild = right;
+      i = leftPosition -1;
+    }
+    if (i > -1) {
+      if (binaryNames.includes(tokens[i].name)) {
+        let leftArr = tokens.slice(0, i);
+        let left = new Node('BINARY', leftArr);
+        node.left = left;
+        let rightArr = tokens.slice(i + 1);
+        let right = new Node('BINARY', rightArr);
+        node.right = right;
+        node.operation = tokens[i].name;
         found = true;
-        grouping(left);
+      } else {
+        i --;
+      }
     }
   }
-  //if found = false, there were no parentheses, so we call the next function
-  if (!found) {
-    node.type = 'BINARY';
-    binary(node);
+  if (found) {
+    binary(node.left, pairs);
+    binary(node.right, pairs);
+    //console.log(node)
   }
+  else {
+    unary(node, pairs);
+  }
+  return node;
 }
 
-//oops, grouping needs to be below unary
+function unary(node, pairs) {
+  if (node.tokens[0].name === 'NEGATION'){
+    let right = new Node('UNARY', node.tokens.slice(1));
+    node.operation = 'NEGATION';
+    node.right = right;
+    node.type = 'UNARY';
+    unary(right, pairs);
+  } else {
+    grouping(node, pairs);
+  }
+  return node;
+}
 
-function findPair(n, pairs) {
-  for (i = 0; i < pairs.length; i++) {
-    if (pairs[i][0] = n) {
-      return pairs[i][1];
+function grouping(node, pairs) {
+  console.log(node);
+  if (node.tokens.length === 1) {
+    node.type = "PROPOSITION";
+    return node;
+  } else if (node.tokens[0].name === 'L_PARENTHESIS') {
+
+    /*
+        let endToken = 0;
+    for (i = 0; i < pairs.length; i++) {
+      if (pairs[i][0] === node.tokens[0].position) {
+        let endPosition = pairs[i][1];
+        for (j = 0; j < node.tokens.length; j ++) {
+          if (node.tokens[j].position === endPosition) {
+            endToken = j;
+          }
+        }
+      }
+    }
+    */
+    let right = new Node('GROUPING', node.tokens.slice(1, node.tokens.length -1));
+    node.right = right;
+    node.type = 'GROUPING';
+    node.operation = 'PARENTHESES';
+    grouping(right, pairs);
+  } else {
+    node.type = "BINARY";
+    binary(node, pairs);
+  }
+  return node;
+}
+
+/*
+function eval (root) {
+  let order = [];
+  function traverse (node) {
+    if(node.left) {
+      traverse(node.left);
+    }
+    if(node.right) {
+      traverse(node.right);
+    }
+    let e = [node.tokens, node.operation]; 
+    if (!order.includes(e)) {
+      order.push(e);
     }
   }
+
+  traverse(root)
+  return order;
 }
 
+*/
 
+console.log(parseTokens('(~a&~(b|c))'))
