@@ -3,6 +3,7 @@ const { getPropLength } = require('../lexer/getPropLength');
 const { getToken } = require('../lexer/getToken');
 const { lexer } = require('../lexer/lexer');
 const { pairParentheses } = require('../pairParentheses/pairParentheses');
+const { orderOfOperations } = require('../orderOfOperations/orderOfOperations')
 
 describe('lexer and helper functions', function () {
   describe('getPropLength', function() {
@@ -223,5 +224,31 @@ describe('pairParentheses', function () {
   })
   it('unequal parentheses', function() {
     assert.strictEqual(pairParentheses('((x)'), null)
+  })
+})
+
+describe('orderOfOperations', function () {
+  it('~a|~(b==~c)', function() {
+    assert.deepStrictEqual(orderOfOperations('~a|~(b==~c)'), [
+      {operation: null, operand1: 'a', operand2: null, value: 'a'},
+      {operation: 'NEGATION', operand1: 'a', operand2: null, value: '~a'},
+      {operation: null, operand1: 'b', operand2: null, value: 'b'},
+      {operation: null, operand1: 'c', operand2: null, value: 'c'},
+      {operation: 'NEGATION', operand1: 'c', operand2: null, value: '~c'},
+      {operation: 'BICONDITIONAL', operand1: 'b', operand2: '~c', value: 'b==~c'},
+      {operation: 'NEGATION', operand1: '(b==~c)', operand2: null, value :'~(b==~c)'},
+      {operation: 'DISJUNCTION', operand1: '~a', operand2: '~(b==~c)', value :'~a|~(b==~c)'}
+    ])
+  })
+  it('ab->(cde->(fgh->ijk))', function() {
+    assert.deepStrictEqual(orderOfOperations('ab->(cde->(fgh->ijk))'), [
+      {operation: null, operand1: 'ab', operand2: null, value: 'ab'},
+      {operation: null, operand1: 'cde', operand2: null, value:'cde'},
+      {operation: null, operand1: 'fgh', operand2: null, value:'fgh'},
+      {operation: null, operand1: 'ijk', operand2: null, value:'ijk'},
+      {operation: 'CONDITIONAL', operand1: 'fgh', operand2: 'ijk', value:'fgh->ijk'},
+      {operation: 'CONDITIONAL', operand1: 'cde', operand2: '(fgh->ijk)', value:'cde->(fgh->ijk)'},
+      {operation: 'CONDITIONAL', operand1: 'ab', operand2: '(cde->(fgh->ijk))', value: 'ab->(cde->(fgh->ijk))'},
+    ])
   })
 })

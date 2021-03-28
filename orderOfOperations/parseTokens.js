@@ -13,6 +13,11 @@ class Node {
   }
 }
 
+//we will read tokens to create a tree structure representing the operations to be performed
+//for binary operations, the right and left nodes will represent the first and second operands
+//for unary operations(negation), the right node will be the negated proposition, the left will be null
+//'GROUPING' is used for intermediary nodes in which we need to remove the outermost parentheses
+
 function parseTokens (str) {
   let tokenArray = lexer(str);
   let head = new Node('BINARY', tokenArray);
@@ -23,7 +28,7 @@ function parseTokens (str) {
     
 
 function binary(node, pairs) {
-  //need to ignore parens
+  //recursively loop over the tokens, find all of type "BINARY", and create a node to represent the binary operation
   const binaryNames = [
     'CONJUNCTION',
     'DISJUNCTION',
@@ -40,6 +45,7 @@ function binary(node, pairs) {
       let rightPosition = tokens[i].position;
       let leftPosition = 0;
       let leftToken = 0;
+      //find the index of the token corresponding to the left parenthesis that pairs with the current token
       for(j = 0; j < pairs.length; j ++) {
         if(pairs[j][1] === rightPosition) {
           leftPosition = pairs[j][0];
@@ -53,6 +59,7 @@ function binary(node, pairs) {
       i = leftToken -1;
     }
     if (i > -1) {
+      //if the token's name is a binary operation, create left and right nodes
       if (binaryNames.includes(tokens[i].name)) {
         let leftArr = tokens.slice(0, i);
         let left = new Node('BINARY', leftArr);
@@ -68,17 +75,19 @@ function binary(node, pairs) {
     }
   }
   if (found) {
+    //if found, then nodes have been created; we recursively call binary on them
     binary(node.left, pairs);
     binary(node.right, pairs);
-    //console.log(node)
   }
   else {
+    //if not found, the operation is not binary, so we pass it to the next function
     unary(node, pairs);
   }
   return node;
 }
 
 function unary(node, pairs) {
+  //check if the first token is NEGATION; if so, create a right node and recursively call unary on it
   if (node.tokens[0].name === 'NEGATION'){
     let right = new Node('UNARY', node.tokens.slice(1));
     node.operation = 'NEGATION';
@@ -86,17 +95,19 @@ function unary(node, pairs) {
     node.type = 'UNARY';
     unary(right, pairs);
   } else {
+    //if not, then the operation is not negation, so we pass it to the next function
     grouping(node, pairs);
   }
   return node;
 }
 
 function grouping(node, pairs) {
-  console.log(node);
   if (node.tokens.length === 1) {
+    //if there is only one token, it must be a proposition, so we end the recursive call
     node.type = "PROPOSITION";
     return node;
   } else if (node.tokens[0].name === 'L_PARENTHESIS') {
+    //check if the node is a parenthesis; if so, find the corresponding right parenthesis and make a node with the contents between the two parentheses
     let startPosition = node.tokens[0].position;
     let endPosition = 0;
     let endToken = 0;
@@ -116,33 +127,16 @@ function grouping(node, pairs) {
     node.operation = 'PARENTHESES';
     grouping(right, pairs);
   } else {
+    //if the token is neither a grouping or proposition, pass it back in to binary
     node.type = "BINARY";
     binary(node, pairs);
   }
   return node;
 }
 
-/*
-function eval (root) {
-  let order = [];
-  function traverse (node) {
-    if(node.left) {
-      traverse(node.left);
-    }
-    if(node.right) {
-      traverse(node.right);
-    }
-    let e = [node.tokens, node.operation]; 
-    if (!order.includes(e)) {
-      order.push(e);
-    }
-  }
 
-  traverse(root)
-  return order;
+
+
+module.exports = {
+  parseTokens
 }
-
-*/
-
-let finish = parseTokens('~(~a&~(b|c))');
-console.log(finish);
