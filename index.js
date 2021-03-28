@@ -25,12 +25,13 @@ function generateTruthTable (str) {
   }
   table[0] = topRow;
 
-  //fill basic propositon columns
+
   let numProps = basic.length;
   let numRows = 2 ** numProps;
   for (i = 0; i < numRows; i++) {
     let row = [];
     for (j = 0; j < numProps; j++) {
+      //fill basic propositon columns
       //get the value of each proposition
       let n = 2 ** (numProps - j);
       let r = i % n
@@ -40,11 +41,50 @@ function generateTruthTable (str) {
         row[j] = true;
       }
     }
+    //fill complex proposition columns
+    for (j = 0; j < complex.length; j++) {
+      //get the column numbers of the operands from topRow
+      let index1 = 0;
+      let index2 = 0;
+      for (k = 0; k < topRow.length; k++) {
+        if(topRow[k] === complex[j].operand1) {
+          index1 = k;
+        } else if (`(${topRow[k]})` === complex[j].operand1) {
+          index1 = k;
+        }
+      }
+      if (complex[j].operation !== 'NEGATION') {
+        for (k = 0; k < topRow.length; k++) {
+          if(topRow[k] === complex[j].operand2) {
+            index2 = k;
+          } else if (`(${topRow[k]})` === complex[j].operand2) {
+            index2 = k;
+          }
+        }
+      } 
+      //evaluate
+      if(complex[j].operation === 'NEGATION') {
+        row[j + basic.length] = !row[index1];
+      } else if (complex[j].operation === 'CONJUNCTION') {
+        row[j + basic.length] = row[index1] && row[index2];
+      } else if (complex[j].operation === 'DISJUNCTION') {
+        row[j + basic.length] = row[index1] || row[index2];
+      } else if (complex[j].operation === 'CONDITIONAL') {
+        if (row[index1] === true && row[index2] === false) {
+          row[j + basic.length] = false;
+        } else row[j + basic.length] = true;
+      } else if (complex[j].operation === 'BICONDITIONAL') {
+        if (row[index1] === row[index2]) {
+          row[j + basic.length] = true;
+        } else {
+          row[j + basic.length] = false;
+        }
+      }
+
+    }
     table[i +1] = row;
   }
-  //fill complex proposition columns
-
   console.log(table);
 }
 
-generateTruthTable('~a|~(b==~c)')
+generateTruthTable('a&(b==c)')
