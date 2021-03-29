@@ -1,8 +1,8 @@
 {
-  "name": "Truth-Table-GeneratorV2",
+  "name": "generate-truth-table",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "generateTruthTable.js",
   "scripts": {
     "test": "mocha"
   },
@@ -11,7 +11,10 @@
     "url": "git+https://github.com/masimoncic/Truth-Table-GeneratorV2.git"
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "Mark Simoncic",
+    "email": "masimoncic@gmail.com"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/masimoncic/Truth-Table-GeneratorV2/issues"
