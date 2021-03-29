@@ -1,20 +1,37 @@
 const { orderOfOperations } = require('./orderOfOperations/orderOfOperations')
 
-function generateTruthTable (str) {
-  let order = orderOfOperations(str);
-  console.log(order);
+function generateTruthTable (arr) {
   let table = [];
   let basic = [];
   let complex = [];
-  //seperate the basic propositions from complex ones
-  for (i = 0; i < order.length; i ++) {
-    if (order[i].operation) {
-      complex.push(order[i]);
-    } else {
-        basic.push(order[i]);
+  for (f = 0; f < arr.length; f ++) {
+    //parse all inputs
+    let order = orderOfOperations(arr[f]);
+    //separate propositions into basic and complex, filter duplicates
+    for (g = 0; g  < order.length; g ++) {
+      if (order[g].operation) {
+        let found = false;
+        for (h = 0; h < complex.length; h++) {
+          if(complex[h].value === order[g].value) {
+            found = true;
+          }
+        }
+        if(!found) {
+          complex.push(order[g]);
+        }
+      } else {
+        let found = false;
+        for(h = 0; h < basic.length; h++) {
+          if(basic[h].value === order[g].value) {
+            found = true;
+          }
+        }
+        if(!found) {
+          basic.push(order[g]);
+        }
+      }
     }
   }
-
   //fill out the top row with strings to be evaluated
   let topRow = [];
   for (i = 0; i < basic.length; i++) {
@@ -84,15 +101,13 @@ function generateTruthTable (str) {
     }
     table[i +1] = row;
   }
-  console.log(table);
+  return table;
 }
 
-module.exports = {
-  
-}
 
-//generateTruthTable('a&(b==c)')
 
+
+module.exports = generateTruthTable;
 
 /*
 function makeTable(array) {
